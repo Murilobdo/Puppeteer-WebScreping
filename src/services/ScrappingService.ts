@@ -20,14 +20,14 @@ export class ScrappingService implements IScrappingService {
 
                 var elements = await this._page.$$(selector);
 
-                await elements.forEach(async (element) => {
+                for (let i = 0; i < elements.length; i++) {
                     let href = await this._page.evaluate(
                         (element: any) => element.getAttribute('href'),
-                        element
+                        elements[i]
                     );
-
+                
                     result.push(href);
-                });
+                }
 
                 resolve(result);
             } catch (error) {
@@ -37,7 +37,7 @@ export class ScrappingService implements IScrappingService {
         });
     }
 
-    async read(selector: string): Promise<Array<string>> {
+    async readText(selector: string): Promise<Array<string>> {
         return new Promise(async (resolve, reject) => {
             try {
                 var result = new Array<string>();

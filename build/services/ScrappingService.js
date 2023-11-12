@@ -22,10 +22,10 @@ class ScrappingService {
                 try {
                     var result = new Array();
                     var elements = yield this._page.$$(selector);
-                    yield elements.forEach((element) => __awaiter(this, void 0, void 0, function* () {
-                        let href = yield this._page.evaluate((element) => element.getAttribute('href'), element);
+                    for (let i = 0; i < elements.length; i++) {
+                        let href = yield this._page.evaluate((element) => element.getAttribute('href'), elements[i]);
                         result.push(href);
-                    }));
+                    }
                     resolve(result);
                 }
                 catch (error) {
@@ -34,7 +34,7 @@ class ScrappingService {
             }));
         });
     }
-    read(selector) {
+    readText(selector) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
                 try {

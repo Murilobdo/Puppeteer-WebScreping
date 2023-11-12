@@ -1,6 +1,5 @@
-import { promises } from "dns";
 import { IFileService } from "../interfaces/IService";
-import { readFileSync, writeFileSync } from 'fs';
+import { writeFileSync } from 'fs';
 import { join } from 'path';
 
 export class FileService implements IFileService {
