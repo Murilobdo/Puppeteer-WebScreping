@@ -1,13 +1,24 @@
 
 import puppeteer from 'puppeteer';
+import express, { Response, Router, Request } from 'express';
+
 import { IFileService, IScrappingService } from './interfaces/IService';
 import { FileService } from './services/FileService';
 import { ScrappingService } from './services/ScrappingService';
 import { ICar } from './interfaces/IModel';
-import { File } from 'buffer';
-
 
 const URL = 'https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/vw-volkswagen/gol/1994/estado-sp?q=gol%20quadrado';
+
+const app = express();
+const route = Router();
+app.use(express.json());
+
+route.get('/cars', async (req: Response, res: Request) => {
+    var cars = fetchData();
+    return JSON.stringify(cars);
+});
+
+app.listen(8280, () => 'server running on port 8280')
 
 const fetchData = async () => {
 
@@ -43,7 +54,8 @@ const fetchData = async () => {
 
     var fileService: IFileService = new FileService();
     fileService.write('../cars.json', JSON.stringify(cars));
-    console.log('Busca Finalizada !')
+    console.log('Busca Finalizada !');
+    return cars;
 }
 
 function getKmDriven(addInfos: string[], index: number): string {
@@ -68,8 +80,6 @@ function getCity(addInfos: string[], index: number): string {
     return cityTime;
 }
 
-
-fetchData();
 
 
 

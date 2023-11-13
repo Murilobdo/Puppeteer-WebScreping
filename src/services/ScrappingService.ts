@@ -1,4 +1,4 @@
-import puppeteer, { Browser, Page } from 'puppeteer';
+import { Browser, Page } from 'puppeteer';
 import { IScrappingService } from "../interfaces/IService";
 
 export class ScrappingService implements IScrappingService {

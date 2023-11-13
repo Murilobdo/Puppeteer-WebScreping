@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13,9 +36,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const puppeteer_1 = __importDefault(require("puppeteer"));
+const express_1 = __importStar(require("express"));
 const FileService_1 = require("./services/FileService");
 const ScrappingService_1 = require("./services/ScrappingService");
 const URL = 'https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/vw-volkswagen/gol/1994/estado-sp?q=gol%20quadrado';
+const app = (0, express_1.default)();
+const route = (0, express_1.Router)();
+app.use(express_1.default.json());
+route.get('/cars', (req, res) => {
+    fetchData().then((data) => {
+        return JSON.stringify(data);
+    });
+});
+app.listen(8280, () => 'server running on port 8280');
 const fetchData = () => __awaiter(void 0, void 0, void 0, function* () {
     var cars = new Array();
     let browser = yield puppeteer_1.default.launch({ headless: false });
@@ -59,5 +92,4 @@ function getCity(addInfos, index) {
     let cityTime = `${addInfos[index + 1]} - ${addInfos[index]}`;
     return cityTime;
 }
-fetchData();
 //# sourceMappingURL=index.js.map
