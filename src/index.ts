@@ -1,84 +1,42 @@
 
 import puppeteer from 'puppeteer';
-import express, { Response, Router, Request } from 'express';
 
 import { IFileService, IScrappingService } from './interfaces/IService';
 import { FileService } from './services/FileService';
-import { ScrappingService } from './services/ScrappingService';
-import { ICar } from './interfaces/IModel';
+import { IProduct } from './interfaces/IModel';
+import { OLXService } from './services/OLXService';
+import { MercadoLivreService } from './services/MercadoLivreService';
 
-const URL = 'https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/vw-volkswagen/gol/1994/estado-sp?q=gol%20quadrado';
-
-const app = express();
-const route = Router();
-app.use(express.json());
-
-route.get('/cars', async (req: Response, res: Request) => {
-    var cars = fetchData();
-    return JSON.stringify(cars);
-});
-
-app.listen(8280, () => 'server running on port 8280')
+const OLX_URI = 'https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/vw-volkswagen/gol/1994/estado-sp?q=gol%20quadrado';
+const MERCADO_LIVRE_URI = 'https://lista.mercadolivre.com.br/carros-gol-quadrado';
 
 const fetchData = async () => {
 
-    var cars = new Array<ICar>();
+    var products = new Array<IProduct>();
 
     let browser = await puppeteer.launch({ headless: false });
 
-    var scrapService: IScrappingService = await new ScrappingService(
-        URL,
-        browser,
-        await browser.newPage()
-    ).init();
-
+    var scraps: Array<IScrappingService> = new Array<IScrappingService>();
+    
+    // scraps.push(await new OLXService(OLX_URI, browser, await browser.newPage()));
+    scraps.push(await new MercadoLivreService(MERCADO_LIVRE_URI, browser, await browser.newPage()));
+    
     console.log('Iniciando a busca dos dados');
     console.log('Aguarde...')
 
-    var titles = await scrapService.readText('a > h2');
-    var prices = await scrapService.readText('.olx-ad-card__details-price--vertical');
-    var citys = await scrapService.readText('.olx-ad-card__location-date-container');
-    var addInfos = await scrapService.readText('.olx-ad-card__labels-items');
-    var links = await scrapService.readLinks('[data-ds-component="DS-NewAdCard-Link"]');
-
-    for (let index = 0; index < titles.length; index++) {
-        cars.push({
-            title: titles[index],
-            price: prices[index],
-            kmDriven: getKmDriven(addInfos, index),
-            year: getYear(addInfos, index),
-            city: getCity(citys, index),
-            link: links[index]
-        });
+    for (let current = 0; current < scraps.length; current++) {
+        products = products.concat(await scraps[current].startScrapping());
     }
 
     var fileService: IFileService = new FileService();
-    fileService.write('../cars.json', JSON.stringify(cars));
+    fileService.write('../products.json', JSON.stringify(products));
     console.log('Busca Finalizada !');
-    return cars;
+    return products;
 }
 
-function getKmDriven(addInfos: string[], index: number): string {
-    let infos = addInfos[index].trim().split(' ');
-    let kmDriven = infos[0];
+fetchData();
 
-    if (kmDriven.indexOf('.') > 0) {
-        return kmDriven + ' km';
-    }
 
-    return '';
-}
-
-function getYear(addInfos: string[], index: number): string {
-    let infos = addInfos[index].trim().split(' ');
-    let year = infos[2];
-    return year;
-}
-
-function getCity(addInfos: string[], index: number): string {
-    let cityTime = `${addInfos[index + 1]} - ${addInfos[index]}`;
-    return cityTime;
-}
 
 
 

@@ -15,6 +15,7 @@ class ScrappingService {
         this._URL = url;
         this._browser = browser;
         this._page = page;
+        this._products = new Array();
     }
     readLinks(selector) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -24,6 +25,24 @@ class ScrappingService {
                     var elements = yield this._page.$$(selector);
                     for (let i = 0; i < elements.length; i++) {
                         let href = yield this._page.evaluate((element) => element.getAttribute('href'), elements[i]);
+                        result.push(href);
+                    }
+                    resolve(result);
+                }
+                catch (error) {
+                    reject(error);
+                }
+            }));
+        });
+    }
+    readLinkImages(selector) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                try {
+                    var result = new Array();
+                    var elements = yield this._page.$$(selector);
+                    for (let i = 0; i < elements.length; i++) {
+                        let href = yield this._page.evaluate((element) => element.getAttribute('srcset'), elements[i]);
                         result.push(href);
                     }
                     resolve(result);
@@ -59,6 +78,9 @@ class ScrappingService {
             yield this._page.goto(this._URL);
             return this;
         });
+    }
+    startScrapping() {
+        throw new Error("Method not implemented.");
     }
 }
 exports.ScrappingService = ScrappingService;

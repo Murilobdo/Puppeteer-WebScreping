@@ -1,9 +1,8 @@
-export interface ICar
+export interface IProduct
 {
     title: string;
     price: string;
-    kmDriven: string;
-    year: string;
-    city: string;
+    createAt: string;
     link: string;
+    imageLink: string;
 }
