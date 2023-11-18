@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -11,11 +11,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ScrappingService = void 0;
 class ScrappingService {
-    constructor(url, browser, page) {
-        this._URL = url;
+    constructor(inputSearch, browser, page) {
         this._browser = browser;
+        this._inputSearch = inputSearch;
         this._page = page;
         this._products = new Array();
+    }
+    startScrapping() {
+        throw new Error("Metodo startScrapping não foi implementado, e necessario a implementação para o scrappgin que esta criando.");
     }
     readLinks(selector) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -42,8 +45,9 @@ class ScrappingService {
                     var result = new Array();
                     var elements = yield this._page.$$(selector);
                     for (let i = 0; i < elements.length; i++) {
-                        let href = yield this._page.evaluate((element) => element.getAttribute('srcset'), elements[i]);
-                        result.push(href);
+                        let srcset = yield this._page.evaluate((element) => element.getAttribute('srcset'), elements[i]);
+                        let src = yield this._page.evaluate((element) => element.getAttribute('src'), elements[i]);
+                        result.push(srcset || src);
                     }
                     resolve(result);
                 }
@@ -72,15 +76,10 @@ class ScrappingService {
             }));
         });
     }
-    init() {
+    init(url) {
         return __awaiter(this, void 0, void 0, function* () {
-            this._page = (yield this._browser.pages())[0];
-            yield this._page.goto(this._URL);
-            return this;
+            yield this._page.goto(url);
         });
-    }
-    startScrapping() {
-        throw new Error("Method not implemented.");
     }
 }
 exports.ScrappingService = ScrappingService;

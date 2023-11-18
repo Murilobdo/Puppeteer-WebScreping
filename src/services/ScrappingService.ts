@@ -1,19 +1,24 @@
+'use strict';
 import { Browser, Page } from 'puppeteer';
 import { IScrappingService } from "../interfaces/IService";
 import { IProduct } from '../interfaces/IModel';
 
 export class ScrappingService implements IScrappingService {
 
-    private _browser: Browser;
-    private _page: Page;
-    private _URL: string;
+    protected _browser: Browser;
+    protected _page: Page;
     protected _products: Array<IProduct>;
+    protected _inputSearch: string;
 
-    constructor(url: string, browser: any, page: Page) {
-        this._URL = url;
+    constructor(inputSearch: string, browser: Browser, page: Page) {
         this._browser = browser;
+        this._inputSearch = inputSearch;
         this._page = page;
         this._products = new Array<IProduct>();
+    }
+
+    startScrapping(): Promise<Array<IProduct>> {
+        throw new Error("Metodo startScrapping não foi implementado, e necessario a implementação para o scrappgin que esta criando.");
     }
 
     async readLinks(selector: string): Promise<string[]> {
@@ -22,7 +27,7 @@ export class ScrappingService implements IScrappingService {
                 var result = new Array<string>();
 
                 var elements = await this._page.$$(selector);
-
+                
                 for (let i = 0; i < elements.length; i++) {
                     let href = await this._page.evaluate(
                         (element: any) => element.getAttribute('href'),
@@ -48,12 +53,17 @@ export class ScrappingService implements IScrappingService {
                 var elements = await this._page.$$(selector);
 
                 for (let i = 0; i < elements.length; i++) {
-                    let href = await this._page.evaluate(
+                    let srcset = await this._page.evaluate(
                         (element: any) => element.getAttribute('srcset'),
                         elements[i]
                     );
+
+                    let src = await this._page.evaluate(
+                        (element: any) => element.getAttribute('src'),
+                        elements[i]
+                    );
                 
-                    result.push(href);
+                    result.push(srcset || src);
                 }
 
                 resolve(result);
@@ -89,14 +99,8 @@ export class ScrappingService implements IScrappingService {
 
     }
 
-    async init(): Promise<IScrappingService> {
-        this._page = (await this._browser.pages())[0];
-        await this._page.goto(this._URL);
-        return this;
-    }
-
-    startScrapping(): Promise<Array<IProduct>> {
-        throw new Error("Method not implemented.");
+    async init(url: string): Promise<void> {
+        await this._page.goto(url);
     }
 
 }
