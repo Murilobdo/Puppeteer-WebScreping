@@ -12,7 +12,6 @@ export interface IScrappingService
 {
     readLinks(selector: string): Promise<Array<string>>;
     readText(selector: string): Promise<Array<string>>;
-    init(): Promise<IScrappingService>;
     startScrapping(): Promise<Array<IProduct>>;
     readLinkImages(selector: string): Promise<string[]>;
 }

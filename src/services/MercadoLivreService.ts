@@ -1,35 +1,34 @@
-import { Page } from "puppeteer";
+import { Browser, Page } from "puppeteer";
 import { ScrappingService } from "./ScrappingService";
-import { IProduct } from "../interfaces/IModel";
+import { EnumURI, IProduct } from "../interfaces/IModel";
 
 export class MercadoLivreService extends ScrappingService {
 
     private TITLE_SELECTOR: string = 'div > a .ui-search-item__title';
-    private PRICE_SELECTOR: string = '.andes-money-amount__fraction';
-    private URI_SELECTOR: string = 'div > a[target="_blank"]';
-    private CREATE_AT_SELECTOR: string = '';
+    private PRICE_SELECTOR: string = '[class="andes-money-amount ui-search-price__part ui-search-price__part--x-tiny andes-money-amount--cents-superscript andes-money-amount--compact"]';
+    private URI_SELECTOR: string = 'a[class="ui-search-item__group__element ui-search-link"]';
     private URI_IMAGE_SELECTOR: string = 'a > img';
 
-    constructor(url: string, browser: any, page: Page) {
-        super(url, browser, page);
+    constructor(inputSearch: string, browser: Browser, page: Page) {
+        super(inputSearch, browser, page);
     }
 
     async startScrapping(): Promise<IProduct[]> {
-        await this.init();
 
-        var titles = await super.readText(this.TITLE_SELECTOR);
-        var links = await super.readLinks(this.URI_SELECTOR);
-        var prices = await super.readText(this.PRICE_SELECTOR);
-        var imageLinks = await super.readLinkImages(this.URI_IMAGE_SELECTOR);
-        var createAt = await super.readLinks(this.CREATE_AT_SELECTOR);
+        await this.init(`${EnumURI.MercadoLivre}/${this._inputSearch}`);
 
-        for (let index = 0; index < titles.length; index++) {
+        var titles = await this.readText(this.TITLE_SELECTOR);
+        var links = await this.readLinks(this.URI_SELECTOR);
+        var prices = await this.readText(this.PRICE_SELECTOR);
+        var imageLinks = await this.readLinkImages(this.URI_IMAGE_SELECTOR);
+
+        for (let index = 0; index < 5; index++) {
             this._products.push({
-                title: '',
-                price: '',
-                createAt: '',
-                link: '',
-                imageLink: '' 
+                title: titles[index],
+                price: prices[index],
+                createAt: 'Não informado',
+                link: links[index],
+                imageLink: imageLinks[index]
             });
         }
 

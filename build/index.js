@@ -14,15 +14,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const puppeteer_1 = __importDefault(require("puppeteer"));
 const FileService_1 = require("./services/FileService");
+const OLXService_1 = require("./services/OLXService");
 const MercadoLivreService_1 = require("./services/MercadoLivreService");
-const OLX_URI = 'https://www.olx.com.br/autos-e-pecas/carros-vans-e-utilitarios/vw-volkswagen/gol/1994/estado-sp?q=gol%20quadrado';
-const MERCADO_LIVRE_URI = 'https://lista.mercadolivre.com.br/carros-gol-quadrado';
 const fetchData = () => __awaiter(void 0, void 0, void 0, function* () {
     var products = new Array();
+    let inputSearch = 'placa de video RTX';
     let browser = yield puppeteer_1.default.launch({ headless: false });
     var scraps = new Array();
-    // scraps.push(await new OLXService(OLX_URI, browser, await browser.newPage()));
-    scraps.push(yield new MercadoLivreService_1.MercadoLivreService(MERCADO_LIVRE_URI, browser, yield browser.newPage()));
+    scraps.push(yield new OLXService_1.OLXService(inputSearch, browser, yield browser.newPage()));
+    scraps.push(yield new MercadoLivreService_1.MercadoLivreService(inputSearch, browser, yield browser.newPage()));
     console.log('Iniciando a busca dos dados');
     console.log('Aguarde...');
     for (let current = 0; current < scraps.length; current++) {

@@ -11,35 +11,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MercadoLivreService = void 0;
 const ScrappingService_1 = require("./ScrappingService");
+const IModel_1 = require("../interfaces/IModel");
 class MercadoLivreService extends ScrappingService_1.ScrappingService {
-    constructor(url, browser, page) {
-        super(url, browser, page);
+    constructor(inputSearch, browser, page) {
+        super(inputSearch, browser, page);
         this.TITLE_SELECTOR = 'div > a .ui-search-item__title';
-        this.PRICE_SELECTOR = '.andes-money-amount__fraction';
-        this.URI_SELECTOR = 'div > a[target="_blank"]';
-        this.CREATE_AT_SELECTOR = '';
+        this.PRICE_SELECTOR = '[class="andes-money-amount ui-search-price__part ui-search-price__part--x-tiny andes-money-amount--cents-superscript andes-money-amount--compact"]';
+        this.URI_SELECTOR = 'a[class="ui-search-item__group__element ui-search-link"]';
         this.URI_IMAGE_SELECTOR = 'a > img';
     }
     startScrapping() {
-        const _super = Object.create(null, {
-            readText: { get: () => super.readText },
-            readLinks: { get: () => super.readLinks },
-            readLinkImages: { get: () => super.readLinkImages }
-        });
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.init();
-            var titles = yield _super.readText.call(this, this.TITLE_SELECTOR);
-            var links = yield _super.readLinks.call(this, this.URI_SELECTOR);
-            var prices = yield _super.readText.call(this, this.PRICE_SELECTOR);
-            var imageLinks = yield _super.readLinkImages.call(this, this.URI_IMAGE_SELECTOR);
-            var createAt = yield _super.readLinks.call(this, this.CREATE_AT_SELECTOR);
-            for (let index = 0; index < titles.length; index++) {
+            yield this.init(`${IModel_1.EnumURI.MercadoLivre}/${this._inputSearch}`);
+            var titles = yield this.readText(this.TITLE_SELECTOR);
+            var links = yield this.readLinks(this.URI_SELECTOR);
+            var prices = yield this.readText(this.PRICE_SELECTOR);
+            var imageLinks = yield this.readLinkImages(this.URI_IMAGE_SELECTOR);
+            for (let index = 0; index < 5; index++) {
                 this._products.push({
-                    title: '',
-                    price: '',
-                    createAt: '',
-                    link: '',
-                    imageLink: ''
+                    title: titles[index],
+                    price: prices[index],
+                    createAt: 'Não informado',
+                    link: links[index],
+                    imageLink: imageLinks[index]
                 });
             }
             return new Promise((resolve) => resolve(this._products));
