@@ -29,10 +29,10 @@ class OLXService extends ScrappingService_1.ScrappingService {
             var createAt = yield this.readText(this.CREATE_AT_SELECTOR);
             var links = yield this.readLinks(this.URI_SELECTOR);
             var imageLinks = yield this.readLinkImages(this.URI_IMAGE_SELECTOR);
-            for (let index = 0; index < 5; index++) {
+            for (let index = 0; index < titles.length; index++) {
                 this._products.push({
                     title: titles[index],
-                    price: prices[index],
+                    price: this.getPrice(prices[index]),
                     createAt: createAt[index + 1],
                     link: links[index],
                     imageLink: imageLinks[index]
@@ -40,6 +40,17 @@ class OLXService extends ScrappingService_1.ScrappingService {
             }
             return new Promise((resolve) => resolve(this._products));
         });
+    }
+    getPrice(priceText) {
+        if (priceText == null || priceText == undefined || priceText == '')
+            return 0;
+        let price = parseFloat(priceText
+            .trim()
+            .replace('R$ ', '')
+            .replace('R$', '')
+            .replace('.', '')
+            .replace(',', '.'));
+        return price;
     }
     inputSearch(search) {
         const _super = Object.create(null, {

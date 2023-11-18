@@ -25,10 +25,10 @@ export class OLXService extends ScrappingService {
         var links = await this.readLinks(this.URI_SELECTOR);
         var imageLinks = await this.readLinkImages(this.URI_IMAGE_SELECTOR);
 
-        for (let index = 0; index < 5; index++) {
+        for (let index = 0; index < titles.length; index++) {
             this._products.push({
                 title: titles[index],
-                price: prices[index],
+                price: this.getPrice(prices[index]),
                 createAt: createAt[index + 1],
                 link: links[index],
                 imageLink: imageLinks[index]
@@ -38,9 +38,26 @@ export class OLXService extends ScrappingService {
         return new Promise((resolve) => resolve(this._products));
     }
 
+    getPrice(priceText: string): number {
+
+        if(priceText == null || priceText == undefined || priceText == '')
+            return 0;
+
+        let price = parseFloat(priceText
+            .trim()
+            .replace('R$ ', '')
+            .replace('R$', '')
+            .replace('.', '')
+            .replace(',', '.'));
+            
+        return price;
+    }
+
     async inputSearch(search: string): Promise<void> {
         super._page.type('input[placeholder="Buscar"]', search);
     }
 
 
 }
+
+

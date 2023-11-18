@@ -1,7 +1,7 @@
 export interface IProduct
 {
     title: string;
-    price: string;
+    price: number;
     createAt: string;
     link: string;
     imageLink: string;

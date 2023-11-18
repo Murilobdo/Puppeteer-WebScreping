@@ -22,10 +22,10 @@ export class MercadoLivreService extends ScrappingService {
         var prices = await this.readText(this.PRICE_SELECTOR);
         var imageLinks = await this.readLinkImages(this.URI_IMAGE_SELECTOR);
 
-        for (let index = 0; index < 5; index++) {
+        for (let index = 0; index < titles.length; index++) {
             this._products.push({
                 title: titles[index],
-                price: prices[index],
+                price: this.getPrice(prices[index]),
                 createAt: 'Não informado',
                 link: links[index],
                 imageLink: imageLinks[index]
@@ -33,5 +33,20 @@ export class MercadoLivreService extends ScrappingService {
         }
 
         return new Promise((resolve) => resolve(this._products));
+    }
+
+    getPrice(priceText: string): number {
+
+        if(priceText == null || priceText == undefined || priceText == '')
+            return 0;
+
+        let price = parseFloat(priceText
+            .trim()
+            .replace('R$ ', '')
+            .replace('R$', '')
+            .replace('.', '')
+            .replace(',', '.'));
+            
+        return price;
     }
 }

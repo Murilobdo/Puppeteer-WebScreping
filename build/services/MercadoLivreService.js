@@ -27,10 +27,10 @@ class MercadoLivreService extends ScrappingService_1.ScrappingService {
             var links = yield this.readLinks(this.URI_SELECTOR);
             var prices = yield this.readText(this.PRICE_SELECTOR);
             var imageLinks = yield this.readLinkImages(this.URI_IMAGE_SELECTOR);
-            for (let index = 0; index < 5; index++) {
+            for (let index = 0; index < titles.length; index++) {
                 this._products.push({
                     title: titles[index],
-                    price: prices[index],
+                    price: this.getPrice(prices[index]),
                     createAt: 'Não informado',
                     link: links[index],
                     imageLink: imageLinks[index]
@@ -38,6 +38,17 @@ class MercadoLivreService extends ScrappingService_1.ScrappingService {
             }
             return new Promise((resolve) => resolve(this._products));
         });
+    }
+    getPrice(priceText) {
+        if (priceText == null || priceText == undefined || priceText == '')
+            return 0;
+        let price = parseFloat(priceText
+            .trim()
+            .replace('R$ ', '')
+            .replace('R$', '')
+            .replace('.', '')
+            .replace(',', '.'));
+        return price;
     }
 }
 exports.MercadoLivreService = MercadoLivreService;

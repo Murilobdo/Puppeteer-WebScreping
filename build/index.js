@@ -28,6 +28,7 @@ const fetchData = () => __awaiter(void 0, void 0, void 0, function* () {
     for (let current = 0; current < scraps.length; current++) {
         products = products.concat(yield scraps[current].startScrapping());
     }
+    products.sort((a, b) => a.price - b.price);
     var fileService = new FileService_1.FileService();
     fileService.write('../products.json', JSON.stringify(products));
     console.log('Busca Finalizada !');
