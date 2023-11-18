@@ -14,23 +14,24 @@ const ScrappingService_1 = require("./ScrappingService");
 class MercadoLivreService extends ScrappingService_1.ScrappingService {
     constructor(url, browser, page) {
         super(url, browser, page);
-        this.TITLE_SELECTOR = '.ui-search-item__group .ui-search-item__group--title';
-        this.PRICE_SELECTOR = 'ui-search-card-attributes ui-search-item__group__element';
-        this.URI_SELECTOR = '';
+        this.TITLE_SELECTOR = 'div > a .ui-search-item__title';
+        this.PRICE_SELECTOR = '.andes-money-amount__fraction';
+        this.URI_SELECTOR = 'div > a[target="_blank"]';
         this.CREATE_AT_SELECTOR = '';
-        this.URI_IMAGE_SELECTOR = '';
+        this.URI_IMAGE_SELECTOR = 'a > img';
     }
     startScrapping() {
         const _super = Object.create(null, {
             readText: { get: () => super.readText },
-            readLinks: { get: () => super.readLinks }
+            readLinks: { get: () => super.readLinks },
+            readLinkImages: { get: () => super.readLinkImages }
         });
         return __awaiter(this, void 0, void 0, function* () {
             yield this.init();
             var titles = yield _super.readText.call(this, this.TITLE_SELECTOR);
-            var prices = yield _super.readText.call(this, this.PRICE_SELECTOR);
             var links = yield _super.readLinks.call(this, this.URI_SELECTOR);
-            var imageLinks = yield _super.readLinks.call(this, this.URI_IMAGE_SELECTOR);
+            var prices = yield _super.readText.call(this, this.PRICE_SELECTOR);
+            var imageLinks = yield _super.readLinkImages.call(this, this.URI_IMAGE_SELECTOR);
             var createAt = yield _super.readLinks.call(this, this.CREATE_AT_SELECTOR);
             for (let index = 0; index < titles.length; index++) {
                 this._products.push({

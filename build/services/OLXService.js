@@ -36,20 +36,15 @@ class OLXService extends ScrappingService_1.ScrappingService {
             var imageLinks = yield _super.readLinkImages.call(this, this.URI_IMAGE_SELECTOR);
             for (let index = 0; index < titles.length; index++) {
                 this._products.push({
-                    title: titles[index],
-                    price: prices[index],
-                    createAt: this.getcreateAt(createAt, index),
-                    link: links[index],
-                    imageLink: imageLinks[index]
+                    title: titles[index].trim(),
+                    price: prices[index].trim(),
+                    createAt: createAt[index + 1].trim(),
+                    link: links[index].trim(),
+                    imageLink: imageLinks[index].trim()
                 });
             }
             return new Promise((resolve) => resolve(this._products));
         });
-    }
-    getcreateAt(addInfos, index) {
-        let infos = addInfos[index].trim().split(' ');
-        let createAt = infos[2];
-        return createAt;
     }
 }
 exports.OLXService = OLXService;

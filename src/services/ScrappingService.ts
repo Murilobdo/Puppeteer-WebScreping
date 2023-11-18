@@ -48,12 +48,17 @@ export class ScrappingService implements IScrappingService {
                 var elements = await this._page.$$(selector);
 
                 for (let i = 0; i < elements.length; i++) {
-                    let href = await this._page.evaluate(
+                    let srcset = await this._page.evaluate(
                         (element: any) => element.getAttribute('srcset'),
                         elements[i]
                     );
+
+                    let src = await this._page.evaluate(
+                        (element: any) => element.getAttribute('src'),
+                        elements[i]
+                    );
                 
-                    result.push(href);
+                    result.push(srcset || src);
                 }
 
                 resolve(result);

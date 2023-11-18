@@ -42,8 +42,9 @@ class ScrappingService {
                     var result = new Array();
                     var elements = yield this._page.$$(selector);
                     for (let i = 0; i < elements.length; i++) {
-                        let href = yield this._page.evaluate((element) => element.getAttribute('srcset'), elements[i]);
-                        result.push(href);
+                        let srcset = yield this._page.evaluate((element) => element.getAttribute('srcset'), elements[i]);
+                        let src = yield this._page.evaluate((element) => element.getAttribute('src'), elements[i]);
+                        result.push(srcset || src);
                     }
                     resolve(result);
                 }
